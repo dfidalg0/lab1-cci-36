@@ -3,6 +3,13 @@ body {
     overflow: hidden;
 }
 
+img {
+    max-width: 100%;
+    height: auto;
+    top: 0;
+    left: 0;
+}
+
 canvas {
     position: absolute;
     margin: 0;

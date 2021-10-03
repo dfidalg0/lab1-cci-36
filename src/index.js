@@ -1,27 +1,31 @@
 import './style.css';
 import * as THREE from 'three';
 
-const canvas = document.querySelector('canvas');
+const image = document.getElementById('road');
+const imageDimensions = image.getBoundingClientRect();
+const canvas = document.createElement('canvas');
+
+canvas.width = imageDimensions.width;
+canvas.height = imageDimensions.height;
+
+document.body.appendChild(canvas);
 
 const scene = new THREE.Scene();
-
 const camera = new THREE.PerspectiveCamera(
     75,
     window.innerWidth / window.innerHeight
 );
 
 const renderer = new THREE.WebGLRenderer({
-    canvas,
-    alpha: false,
-    antialias: false
+    antialias: true,
+    canvas: canvas,
+    alpha: true
 });
-
-renderer.setSize(window.innerWidth, window.innerHeight);
 
 window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(imageDimensions.width, imageDimensions.height);
 });
 
 const geometry = new THREE.BoxGeometry(1, 1, 1);
