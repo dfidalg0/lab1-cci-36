@@ -60,13 +60,45 @@ if (import.meta.env.DEV) {
     scene.add(axes, grid);
 }
 
+const movements = {
+    x: 0,
+    z: 0
+};
+
+document.addEventListener('keydown', e => {
+    if (e.repeat) return;
+
+    switch(e.key) {
+        case 'ArrowUp':    movements.z = +0.2; break;
+        case 'ArrowDown':  movements.z = -0.2; break;
+        case 'ArrowLeft':  movements.x = +0.05; break;
+        case 'ArrowRight': movements.x = -0.05; break;
+    }
+});
+
+document.addEventListener('keyup', e => {
+    if (e.repeat) return;
+
+    switch (e.key) {
+        case 'ArrowUp':    movements.z = 0; break;
+        case 'ArrowDown':  movements.z = 0; break;
+        case 'ArrowLeft':  movements.x = 0; break;
+        case 'ArrowRight': movements.x = 0; break;
+    }
+});
+
 function animate() {
     requestAnimationFrame(animate);
 
-    cube.position.z += 0.2;
+    for (const [dir, inc] of Object.entries(movements)) {
+        cube.position[dir] += inc;
+    }
 
-    if (cube.position.z >= 110) {
+    if (cube.position.z > 110) {
         cube.position.z = -1;
+    }
+    else if (cube.position.z < -1) {
+        cube.position.z = 110;
     }
 
     renderer.render(scene, camera);
