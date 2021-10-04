@@ -32,13 +32,6 @@ const cube = new THREE.Mesh(geometry, material);
 
 const light = new THREE.DirectionalLight(0xffffff, 1);
 
-const test = new THREE.Mesh(
-    new THREE.BoxGeometry(1, 1, 1),
-    new THREE.MeshBasicMaterial(0xffffff)
-);
-
-test.translateZ(1);
-
 scene.add(cube, light);
 camera.position.y = 3.5;
 camera.position.x = 0.1;
