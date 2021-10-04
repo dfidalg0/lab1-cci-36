@@ -33,6 +33,9 @@ function setView() {
     camera.position.x = 0.18 * window.innerWidth / BASE_WIDTH;
     // Correção da imperfeição da rotação da fotografia
     camera.rotation.y = Math.PI - Math.asin(baseSin * camera.aspect / BASE_ASPECT);
+    // Correção do ângulo de projeção
+    // NÃO há nenhuma garantia de que isso funcione em telas diferentes
+    camera.rotation.x = THREE.Math.degToRad(-1.3);
     // Atualização da matriz de projeção
     camera.updateProjectionMatrix();
 }
@@ -55,7 +58,7 @@ scene.add(cube, light);
 
 if (import.meta.env.DEV) {
     const axes = new THREE.AxesHelper(2);
-    const grid = new THREE.GridHelper(5, 10);
+    const grid = new THREE.GridHelper(9.5, 10);
 
     scene.add(axes, grid);
 }
@@ -109,6 +112,8 @@ document.addEventListener('keyup', e => {
     }
 });
 
+const infinity = 235;
+
 function animate() {
     requestAnimationFrame(animate);
 
@@ -116,11 +121,11 @@ function animate() {
         cube.position[dir] += inc;
     }
 
-    if (cube.position.z > 110) {
+    if (cube.position.z > infinity) {
         cube.position.z = -1;
     }
     else if (cube.position.z < -1) {
-        cube.position.z = 110;
+        cube.position.z = infinity;
     }
 
     renderer.render(scene, camera);
