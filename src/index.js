@@ -60,28 +60,25 @@ m.multiply(rX);
 //m.multiply(rY);
 //m.multiply(rZ);
 m.multiply(esc);
-//m.multiply(rot);
-
-//m.set(1, 0, 0, -0.7, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
 
 const mcam = new THREE.Matrix4();
 mcam.set(
-    1.25739582e2,
-    2.11867494e2,
-    -6.20730557e1,
-    8.44056055e2,
-    -3.30132837,
-    -4.8253344e1,
-    -2.3892796e2,
-    8.72524733e2,
-    -5.76879082e-2,
-    6.22131521e-2,
-    -2.99223647e-2,
-    1.0,
-    0,
-    0,
-    0,
-    1
+    126.1253,
+    211.557,
+    -61.9818,
+    844.3818,
+    -3.2165,
+    -48.4095,
+    -238.9409,
+    873.1383,
+    -0.0576,
+    0.062,
+    -0.03,
+    0.9841,
+    -0.0574,
+    0.0619,
+    -0.0299,
+    1.0
 );
 m.multiply(mcam);
 
@@ -89,67 +86,23 @@ console.log(m);
 
 camera.matrixAutoUpdate = false;
 camera.projectionMatrix = m;
-//camera.projectionMatrix.elements[4] = -0.67;
-//camera.projectionMatrix.elements[5] = 6.8;
-//camera.projectionMatrix.elements[6] = 0.5;
 
 console.log(camera.projectionMatrix);
-//console.log(camera.projectionMatrix);
-//camera.updateProjectionMatrix();
-const geometry = new THREE.BoxGeometry(20, 20, 0);
+
+const geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
 const material = new THREE.MeshLambertMaterial({
     color: 0xffffff,
     wireframe: false
 });
 
-const cube = new THREE.Mesh(geometry, material);
-
 const cube2 = new THREE.Mesh(geometry, material);
-cube2.position.set(10, 10, 0);
+cube2.position.set(2, 2, 2);
 scene.add(cube2);
-
-const cube3 = new THREE.Mesh(geometry, material);
-cube3.position.set(1920, 1080, 0);
-scene.add(cube3);
 
 const light = new THREE.DirectionalLight(0xffffff, 1);
 
-light.position.set(0, 0, 10);
+light.position.set(1, 1, 0);
 
-scene.add(cube);
 scene.add(light);
-camera.position.z = 5;
 
-let xDir = +1;
-let yDir = +1;
-
-const getXMax = () => 3 * camera.aspect;
-const getYMax = () => 3;
-
-function animate() {
-    requestAnimationFrame(animate);
-
-    cube.rotation.x += 0.01;
-    cube.rotation.y += 0.01;
-    cube.rotation.z += 0.01;
-
-    cube.position.x += xDir * 0.05;
-    cube.position.y += yDir * 0.03;
-
-    const { x, y } = cube.position;
-
-    const xMax = getXMax();
-    const yMax = getYMax();
-
-    if (x >= xMax || x <= -xMax) {
-        xDir *= -1;
-    }
-
-    if (y >= yMax || y <= -yMax) {
-        yDir *= -1;
-    }
-
-    renderer.render(scene, camera);
-}
-
-animate();
+renderer.render(scene, camera);
