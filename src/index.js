@@ -1,19 +1,11 @@
-import './style.css';
 import * as THREE from 'three';
 
-const image = document.getElementById('road');
-const imageDimensions = image.getBoundingClientRect();
-const canvas = document.createElement('canvas');
-
-canvas.width = imageDimensions.width;
-canvas.height = imageDimensions.height;
-
-document.body.appendChild(canvas);
+const canvas = document.querySelector('canvas');
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
     75,
-    window.innerWidth / window.innerHeight
+    window.innerWidth / window.innerHeight,
 );
 
 const renderer = new THREE.WebGLRenderer({
@@ -22,10 +14,12 @@ const renderer = new THREE.WebGLRenderer({
     alpha: true
 });
 
+renderer.setSize(window.innerWidth, window.innerHeight);
+
 window.addEventListener('resize', () => {
+    renderer.setSize(window.innerWidth, window.innerHeight);
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
-    renderer.setSize(imageDimensions.width, imageDimensions.height);
 });
 
 const geometry = new THREE.BoxGeometry(1, 1, 1);
@@ -38,39 +32,33 @@ const cube = new THREE.Mesh(geometry, material);
 
 const light = new THREE.DirectionalLight(0xffffff, 1);
 
-light.position.set(0, 0, 10);
+const test = new THREE.Mesh(
+    new THREE.BoxGeometry(1, 1, 1),
+    new THREE.MeshBasicMaterial(0xffffff)
+);
 
-scene.add(cube);
-scene.add(light);
-camera.position.z = 5;
+test.translateZ(1);
 
-let xDir = +1;
-let yDir = +1;
+scene.add(cube, light);
+camera.position.y = 3.5;
+camera.position.x = 0.1;
+camera.position.z = -5;
+camera.rotateY(THREE.Math.degToRad(176));
 
-const getXMax = () => 3 * camera.aspect;
-const getYMax = () => 3;
+if (import.meta.env.DEV) {
+    const axes = new THREE.AxesHelper(2);
+    const grid = new THREE.GridHelper(5, 10);
+
+    scene.add(axes, grid);
+}
 
 function animate() {
     requestAnimationFrame(animate);
 
-    cube.rotation.x += 0.01;
-    cube.rotation.y += 0.01;
-    cube.rotation.z += 0.01;
+    cube.position.z += 0.2;
 
-    cube.position.x += xDir * 0.05;
-    cube.position.y += yDir * 0.03;
-
-    const { x, y } = cube.position;
-
-    const xMax = getXMax();
-    const yMax = getYMax();
-
-    if (x >= xMax || x <= -xMax) {
-        xDir *= -1;
-    }
-
-    if (y >= yMax || y <= -yMax) {
-        yDir *= -1;
+    if (cube.position.z >= 110) {
+        cube.position.z = -1;
     }
 
     renderer.render(scene, camera);
