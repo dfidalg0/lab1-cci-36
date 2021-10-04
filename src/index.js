@@ -69,10 +69,22 @@ document.addEventListener('keydown', e => {
     if (e.repeat) return;
 
     switch(e.key) {
-        case 'ArrowUp':    movements.z = +0.2; break;
-        case 'ArrowDown':  movements.z = -0.2; break;
-        case 'ArrowLeft':  movements.x = +0.05; break;
-        case 'ArrowRight': movements.x = -0.05; break;
+        case 'w':
+        case 'W':
+        case 'ArrowUp':
+            movements.z = +0.2; break;
+        case 's':
+        case 'S':
+        case 'ArrowDown':
+            movements.z = -0.2; break;
+        case 'a':
+        case 'A':
+        case 'ArrowLeft':
+            movements.x = +0.05; break;
+        case 'd':
+        case 'D':
+        case 'ArrowRight':
+            movements.x = -0.05; break;
     }
 });
 
@@ -80,10 +92,20 @@ document.addEventListener('keyup', e => {
     if (e.repeat) return;
 
     switch (e.key) {
-        case 'ArrowUp':    movements.z = 0; break;
-        case 'ArrowDown':  movements.z = 0; break;
-        case 'ArrowLeft':  movements.x = 0; break;
-        case 'ArrowRight': movements.x = 0; break;
+        case 'w':
+        case 'W':
+        case 's':
+        case 'S':
+        case 'ArrowUp':
+        case 'ArrowDown':
+            movements.z = 0; break;
+        case 'a':
+        case 'A':
+        case 'd':
+        case 'D':
+        case 'ArrowLeft':
+        case 'ArrowRight':
+            movements.x = 0; break;
     }
 });
 
