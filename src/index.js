@@ -119,7 +119,7 @@ const ambientlight = new THREE.AmbientLight(0xffb3ec, 0.25);
 
 scene.add(car, light,ambientlight);
 
-let toggleOn = false;
+let toggleOn = true;
 
 const axes = new THREE.AxesHelper(2);
 const grid = new THREE.GridHelper(9.5, 10);
