@@ -2,15 +2,35 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
-        <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+        <link rel="icon" type="image/png" href="/sunset.png" />
         <!-- CSS Crítico == Carregar aqui -->
         <link rel="stylesheet" href="/src/style.css">
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Vite App</title>
+        <script defer type="module" src="/src/index.js"></script>
+        <title>Sunset Driving</title>
     </head>
     <body>
         <img id="road" src="road.jpg" />
         <canvas></canvas>
-        <script type="module" src="/src/index.js"></script>
+        <div id="instructions" class="floating-window hidden">
+            <h3>
+                Controles
+            </h3>
+            <div class="control">
+                <span>WASD / setas:</span> Move o carrinho
+            </div>
+            <div class="control">
+                <span>T: </span> Mostra/oculta objetos na tela
+            </div>
+        </div>
+        <div class="credits">
+            Ícones feitos por
+            <a href="https://www.freepik.com" title="Freepik">
+                Freepik
+            </a> from
+            <a href="https://www.flaticon.com/br/" title="Flaticon">
+                www.flaticon.com
+            </a>
+        </div>
     </body>
 </html>

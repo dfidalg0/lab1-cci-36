@@ -1,5 +1,6 @@
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import * as instructions from './instructions';
+// import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 const canvas = document.querySelector('canvas');
 
@@ -137,6 +138,7 @@ document.addEventListener('keydown', (e) => {
     switch (e.key) {
         case 't':
         case 'T':
+            instructions.toggle();
             toggleOn = !toggleOn;
             break;
         case 'w':
@@ -196,15 +198,18 @@ function animate() {
 
     if (car.position.z > infinity) {
         car.position.z = -1;
-    } else if (car.position.z < -1) {
+    }
+    else if (car.position.z < -1) {
         car.position.z = infinity;
     }
 
-    if(toggleOn){
+    if (toggleOn) {
         scene.add(axes, grid, lighthelper);
-    }else{
+    }
+    else{
         scene.remove(axes, grid, lighthelper);
     }
+
     renderer.render(scene, camera);
 }
 

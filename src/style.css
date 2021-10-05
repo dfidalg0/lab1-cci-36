@@ -19,3 +19,49 @@ img, canvas {
     top: 0;
     left: 0;
 }
+
+.floating-window {
+    position: absolute;
+    right: 30pt;
+    top: 30pt;
+    width: 300pt;
+    padding: 10pt;
+    border-radius: .2em;
+    background: #3b3c5b82;
+    color: whitesmoke;
+    font-family: 'Courier New', Courier, monospace;
+    display: flex;
+    flex-direction: column;
+    gap: 5pt;
+    user-select: none;
+}
+
+.floating-window.hidden {
+    display: none;
+}
+
+.floating-window > h3 {
+    text-align: center;
+    margin: 5pt;
+}
+
+.control > span {
+    font-weight: bold;
+}
+
+.credits {
+    user-select: none;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 3pt 10pt;
+    background: rgba(0, 0, 0, .3);
+    color: whitesmoke;
+    font-size: 9pt;
+}
+
+.credits > a {
+    text-decoration: none;
+    color: white;
+    font-weight: 600;
+}
