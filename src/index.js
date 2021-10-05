@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import * as instructions from './instructions';
-// import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import car from './car';
 
 const canvas = document.querySelector('canvas');
 
@@ -22,7 +22,7 @@ const BASE_ASPECT = BASE_WIDTH / BASE_HEIGHT;
 
 // Seno do ângulo de inclinação da pintura amarela na fotografia estimado para
 // o aspecto 1920:948.
-const baseSin = Math.sin(THREE.Math.degToRad(4.2));
+const BASE_SIN = Math.sin(THREE.Math.degToRad(4.2));
 
 function setView() {
     // Definição do tamanho da vista
@@ -35,7 +35,7 @@ function setView() {
     camera.position.x = (0.18 * window.innerWidth) / BASE_WIDTH;
     // Correção da imperfeição da rotação da fotografia
     camera.rotation.y =
-        Math.PI - Math.asin((baseSin * camera.aspect) / BASE_ASPECT);
+        Math.PI - Math.asin((BASE_SIN * camera.aspect) / BASE_ASPECT);
     // Correção do ângulo de projeção
     // NÃO há nenhuma garantia de que isso funcione em telas diferentes
     camera.rotation.x = THREE.Math.degToRad(-1.3);
@@ -47,91 +47,26 @@ setView();
 
 window.addEventListener('resize', setView);
 
-// criação do grupo que será futuramente um carrinho
-const car = new THREE.Group();
-const material = new THREE.MeshPhongMaterial({
-    color: 0x3366ff,
-    wireframe: false
-});
-const material2 = new THREE.MeshPhongMaterial({
-    color: 0x00b300,
-    wireframe: false
-});
-
-// rodas
-const wheelGeometry = new THREE.TorusGeometry(1 / 7, 1 / 6, 16, 100);
-const wheel = new THREE.Mesh(wheelGeometry, material2);
-wheel.rotateY((90 * Math.PI) / 180);
-wheel.translateY(1 / 7 + 1 / 6);
-
-const wheelPositions = [
-    [1 - 1 / 3, -0.55 + 1 / 6],
-    [1 - 1 / 3, 0.55 - 1 / 6],
-    [-1 + 1 / 3, -0.55 + 1 / 6],
-    [-1 + 1 / 3, 0.55 - 1 / 6]
-];
-
-for (let i = 0; i < wheelPositions.length; i++) {
-    const m = wheel.clone();
-    m.translateX(wheelPositions[i][0]);
-    m.translateZ(wheelPositions[i][1]);
-    car.add(m);
-}
-
-// parte superior do carro (paralelepípedo)
-const upGeometry = new THREE.BoxGeometry(1, 0.4, 0.6);
-const cubeUp = new THREE.Mesh(upGeometry, material);
-cubeUp.position.y = 1 / 6 + 1 / 7 + 0.8;
-cubeUp.position.z = -0.3;
-car.add(cubeUp);
-
-// parte inferior do carro (paralelepípedo)
-const downGeometry = new THREE.BoxGeometry(1, 0.6, 2);
-const cubeDown = new THREE.Mesh(downGeometry, material);
-cubeDown.position.y = 1 / 6 + 1 / 7 + 0.3;
-car.add(cubeDown);
-
-// estrutura auxiliar (1/4 de cilindro) para o carro
-// ficar com arestas mais arredondadas
-const cilynderGeometry = new THREE.CylinderGeometry(
-    0.4,
-    0.4,
-    1,
-    32,
-    32,
-    false,
-    0,
-    Math.PI / 2
-);
-const auxGeo = new THREE.Mesh(cilynderGeometry, material);
-auxGeo.rotateZ(Math.PI / 2);
-auxGeo.translateX(1 / 6 + 1 / 7 + 0.6);
-car.add(auxGeo);
-
-const auxGeo2 = auxGeo.clone();
-auxGeo2.rotateX(Math.PI);
-auxGeo2.translateZ(0.6);
-car.add(auxGeo2);
-
 const light = new THREE.PointLight(0xffb3ec, 15);
-light.position.set(0,40,120);
 const ambientlight = new THREE.AmbientLight(0xffb3ec, 0.25);
 
-scene.add(light,ambientlight);
+light.position.set(0,40,120);
 
-const axes = new THREE.AxesHelper(2);
-const grid = new THREE.GridHelper(9.5, 10);
-const lighthelper = new THREE.PointLightHelper(light);
-//const controls = new OrbitControls(camera, renderer.domElement);
+scene.add(light, ambientlight);
 
+const helpers = [
+    new THREE.AxesHelper(2),
+    new THREE.GridHelper(9.5, 10),
+    new THREE.PointLightHelper(light),
+];
 
 const movements = {
     x: 0,
     z: 0
 };
 
-let toggleOn = true;
-let toggleCar = true;
+let showUI = true;
+let showCar = true;
 
 document.addEventListener('keydown', (e) => {
     if (e.repeat) return;
@@ -140,11 +75,11 @@ document.addEventListener('keydown', (e) => {
         case 't':
         case 'T':
             instructions.toggle();
-            toggleOn = !toggleOn;
+            showUI = !showUI;
             break;
         case 'c':
         case 'C':
-            toggleCar = !toggleCar;
+            showCar = !showCar;
             break;
         case 'w':
         case 'W':
@@ -208,14 +143,14 @@ function animate() {
         car.position.z = infinity;
     }
 
-    if (toggleOn) {
-        scene.add(axes, grid, lighthelper);
+    if (showUI) {
+        scene.add(...helpers);
     }
     else{
-        scene.remove(axes, grid, lighthelper);
+        scene.remove(...helpers);
     }
 
-    if (toggleCar) {
+    if (showCar) {
         scene.add(car);
     }
     else{

@@ -25,6 +25,7 @@ img, canvas {
     right: 30pt;
     top: 30pt;
     width: 300pt;
+    max-width: calc(100vw - 60pt);
     padding: 10pt;
     border-radius: .2em;
     background: #3b3c5b82;
