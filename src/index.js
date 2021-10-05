@@ -117,9 +117,7 @@ const light = new THREE.PointLight(0xffb3ec, 15);
 light.position.set(0,40,120);
 const ambientlight = new THREE.AmbientLight(0xffb3ec, 0.25);
 
-scene.add(car, light,ambientlight);
-
-let toggleOn = true;
+scene.add(light,ambientlight);
 
 const axes = new THREE.AxesHelper(2);
 const grid = new THREE.GridHelper(9.5, 10);
@@ -132,6 +130,9 @@ const movements = {
     z: 0
 };
 
+let toggleOn = true;
+let toggleCar = true;
+
 document.addEventListener('keydown', (e) => {
     if (e.repeat) return;
 
@@ -140,6 +141,10 @@ document.addEventListener('keydown', (e) => {
         case 'T':
             instructions.toggle();
             toggleOn = !toggleOn;
+            break;
+        case 'c':
+        case 'C':
+            toggleCar = !toggleCar;
             break;
         case 'w':
         case 'W':
@@ -208,6 +213,13 @@ function animate() {
     }
     else{
         scene.remove(axes, grid, lighthelper);
+    }
+
+    if (toggleCar) {
+        scene.add(car);
+    }
+    else{
+        scene.remove(car);
     }
 
     renderer.render(scene, camera);
