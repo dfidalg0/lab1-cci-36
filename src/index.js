@@ -1,14 +1,7 @@
-import './style.css';
 import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
-const image = document.getElementById('road');
-const imageDimensions = image.getBoundingClientRect();
-const canvas = document.createElement('canvas');
-
-canvas.width = imageDimensions.width;
-canvas.height = imageDimensions.height;
-
-document.body.appendChild(canvas);
+const canvas = document.querySelector('canvas');
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
@@ -22,57 +15,196 @@ const renderer = new THREE.WebGLRenderer({
     alpha: true
 });
 
-window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(imageDimensions.width, imageDimensions.height);
-});
+const BASE_WIDTH = 1920;
+const BASE_HEIGHT = 948;
+const BASE_ASPECT = BASE_WIDTH / BASE_HEIGHT;
 
-const geometry = new THREE.BoxGeometry(1, 1, 1);
-const material = new THREE.MeshLambertMaterial({
-    color: 0x00ffff,
+// Seno do ângulo de inclinação da pintura amarela na fotografia estimado para
+// o aspecto 1920:948.
+const baseSin = Math.sin(THREE.Math.degToRad(4.2));
+
+function setView() {
+    // Definição do tamanho da vista
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    camera.aspect = window.innerWidth / window.innerHeight;
+    // Ajustes na posição da câmera
+    camera.position.y = 3.5;
+    camera.position.z = -5;
+    // Correção na imperfeição do centro da fotografia
+    camera.position.x = (0.18 * window.innerWidth) / BASE_WIDTH;
+    // Correção da imperfeição da rotação da fotografia
+    camera.rotation.y =
+        Math.PI - Math.asin((baseSin * camera.aspect) / BASE_ASPECT);
+    // Correção do ângulo de projeção
+    // NÃO há nenhuma garantia de que isso funcione em telas diferentes
+    camera.rotation.x = THREE.Math.degToRad(-1.3);
+    // Atualização da matriz de projeção
+    camera.updateProjectionMatrix();
+}
+
+setView();
+
+window.addEventListener('resize', setView);
+
+// criação do grupo que será futuramente um carrinho
+const car = new THREE.Group();
+const material = new THREE.MeshPhongMaterial({
+    color: 0x3366ff,
+    wireframe: false
+});
+const material2 = new THREE.MeshPhongMaterial({
+    color: 0x00b300,
     wireframe: false
 });
 
-const cube = new THREE.Mesh(geometry, material);
+// rodas
+const wheelGeometry = new THREE.TorusGeometry(1 / 7, 1 / 6, 16, 100);
+const wheel = new THREE.Mesh(wheelGeometry, material2);
+wheel.rotateY((90 * Math.PI) / 180);
+wheel.translateY(1 / 7 + 1 / 6);
 
-const light = new THREE.DirectionalLight(0xffffff, 1);
+const wheelPositions = [
+    [1 - 1 / 3, -0.55 + 1 / 6],
+    [1 - 1 / 3, 0.55 - 1 / 6],
+    [-1 + 1 / 3, -0.55 + 1 / 6],
+    [-1 + 1 / 3, 0.55 - 1 / 6]
+];
 
-light.position.set(0, 0, 10);
+for (let i = 0; i < wheelPositions.length; i++) {
+    const m = wheel.clone();
+    m.translateX(wheelPositions[i][0]);
+    m.translateZ(wheelPositions[i][1]);
+    car.add(m);
+}
 
-scene.add(cube);
-scene.add(light);
-camera.position.z = 5;
+// parte superior do carro (paralelepípedo)
+const upGeometry = new THREE.BoxGeometry(1, 0.4, 0.6);
+const cubeUp = new THREE.Mesh(upGeometry, material);
+cubeUp.position.y = 1 / 6 + 1 / 7 + 0.8;
+cubeUp.position.z = -0.3;
+car.add(cubeUp);
 
-let xDir = +1;
-let yDir = +1;
+// parte inferior do carro (paralelepípedo)
+const downGeometry = new THREE.BoxGeometry(1, 0.6, 2);
+const cubeDown = new THREE.Mesh(downGeometry, material);
+cubeDown.position.y = 1 / 6 + 1 / 7 + 0.3;
+car.add(cubeDown);
 
-const getXMax = () => 3 * camera.aspect;
-const getYMax = () => 3;
+// estrutura auxiliar (1/4 de cilindro) para o carro
+// ficar com arestas mais arredondadas
+const cilynderGeometry = new THREE.CylinderGeometry(
+    0.4,
+    0.4,
+    1,
+    32,
+    32,
+    false,
+    0,
+    Math.PI / 2
+);
+const auxGeo = new THREE.Mesh(cilynderGeometry, material);
+auxGeo.rotateZ(Math.PI / 2);
+auxGeo.translateX(1 / 6 + 1 / 7 + 0.6);
+car.add(auxGeo);
+
+const auxGeo2 = auxGeo.clone();
+auxGeo2.rotateX(Math.PI);
+auxGeo2.translateZ(0.6);
+car.add(auxGeo2);
+
+const light = new THREE.PointLight(0xffb3ec, 15);
+light.position.set(0,40,120);
+const ambientlight = new THREE.AmbientLight(0xffb3ec, 0.25);
+
+scene.add(car, light,ambientlight);
+
+let toggleOn = false;
+
+const axes = new THREE.AxesHelper(2);
+const grid = new THREE.GridHelper(9.5, 10);
+const lighthelper = new THREE.PointLightHelper(light);
+//const controls = new OrbitControls(camera, renderer.domElement);
+
+
+const movements = {
+    x: 0,
+    z: 0
+};
+
+document.addEventListener('keydown', (e) => {
+    if (e.repeat) return;
+
+    switch (e.key) {
+        case 't':
+        case 'T':
+            toggleOn = !toggleOn;
+            break;
+        case 'w':
+        case 'W':
+        case 'ArrowUp':
+            movements.z = +0.2;
+            break;
+        case 's':
+        case 'S':
+        case 'ArrowDown':
+            movements.z = -0.2;
+            break;
+        case 'a':
+        case 'A':
+        case 'ArrowLeft':
+            movements.x = +0.05;
+            break;
+        case 'd':
+        case 'D':
+        case 'ArrowRight':
+            movements.x = -0.05;
+            break;
+    }
+});
+
+document.addEventListener('keyup', (e) => {
+    if (e.repeat) return;
+
+    switch (e.key) {
+        case 'w':
+        case 'W':
+        case 's':
+        case 'S':
+        case 'ArrowUp':
+        case 'ArrowDown':
+            movements.z = 0;
+            break;
+        case 'a':
+        case 'A':
+        case 'd':
+        case 'D':
+        case 'ArrowLeft':
+        case 'ArrowRight':
+            movements.x = 0;
+            break;
+    }
+});
+
+const infinity = 235;
 
 function animate() {
     requestAnimationFrame(animate);
 
-    cube.rotation.x += 0.01;
-    cube.rotation.y += 0.01;
-    cube.rotation.z += 0.01;
-
-    cube.position.x += xDir * 0.05;
-    cube.position.y += yDir * 0.03;
-
-    const { x, y } = cube.position;
-
-    const xMax = getXMax();
-    const yMax = getYMax();
-
-    if (x >= xMax || x <= -xMax) {
-        xDir *= -1;
+    for (const [dir, inc] of Object.entries(movements)) {
+        car.position[dir] += inc;
     }
 
-    if (y >= yMax || y <= -yMax) {
-        yDir *= -1;
+    if (car.position.z > infinity) {
+        car.position.z = -1;
+    } else if (car.position.z < -1) {
+        car.position.z = infinity;
     }
 
+    if(toggleOn){
+        scene.add(axes, grid, lighthelper);
+    }else{
+        scene.remove(axes, grid, lighthelper);
+    }
     renderer.render(scene, camera);
 }
 
