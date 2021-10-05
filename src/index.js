@@ -48,14 +48,18 @@ window.addEventListener('resize', setView);
 
 // criação do grupo que será futuramente um carrinho
 const car = new THREE.Group();
-const material = new THREE.MeshLambertMaterial({
-    color: 0x00ffff,
+const material = new THREE.MeshPhongMaterial({
+    color: 0x3366ff,
+    wireframe: false
+});
+const material2 = new THREE.MeshPhongMaterial({
+    color: 0x00b300,
     wireframe: false
 });
 
 // rodas
 const wheelGeometry = new THREE.TorusGeometry(1 / 7, 1 / 6, 16, 100);
-const wheel = new THREE.Mesh(wheelGeometry, material);
+const wheel = new THREE.Mesh(wheelGeometry, material2);
 wheel.rotateY((90 * Math.PI) / 180);
 wheel.translateY(1 / 7 + 1 / 6);
 
@@ -108,16 +112,19 @@ auxGeo2.rotateX(Math.PI);
 auxGeo2.translateZ(0.6);
 car.add(auxGeo2);
 
-const light = new THREE.DirectionalLight(0xffffff, 1);
+const light = new THREE.PointLight(0xffb3ec, 15);
+light.position.set(0,40,120);
+const ambientlight = new THREE.AmbientLight(0xffb3ec, 0.25);
 
-scene.add(car, light);
+scene.add(car, light,ambientlight);
 
-if (import.meta.env.DEV) {
-    const axes = new THREE.AxesHelper(2);
-    const grid = new THREE.GridHelper(9.5, 10);
-    //const controls = new OrbitControls(camera, renderer.domElement);
-    scene.add(axes, grid);
-}
+let toggleOn = false;
+
+const axes = new THREE.AxesHelper(2);
+const grid = new THREE.GridHelper(9.5, 10);
+const lighthelper = new THREE.PointLightHelper(light);
+//const controls = new OrbitControls(camera, renderer.domElement);
+
 
 const movements = {
     x: 0,
@@ -128,6 +135,10 @@ document.addEventListener('keydown', (e) => {
     if (e.repeat) return;
 
     switch (e.key) {
+        case 't':
+        case 'T':
+            toggleOn = !toggleOn;
+            break;
         case 'w':
         case 'W':
         case 'ArrowUp':
@@ -189,6 +200,11 @@ function animate() {
         car.position.z = infinity;
     }
 
+    if(toggleOn){
+        scene.add(axes, grid, lighthelper);
+    }else{
+        scene.remove(axes, grid, lighthelper);
+    }
     renderer.render(scene, camera);
 }
 
